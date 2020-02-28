@@ -3,12 +3,13 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 
 const short = require('./app/short');
-
 const app = express();
+app.use(cors())
+
 const port = 8000;
 
 app.use(express.json());
-app.use(cors());
+
 
 
 

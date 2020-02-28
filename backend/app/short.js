@@ -10,29 +10,30 @@ const router = express.Router();
 
 
 
-router.get('/:id', async (req, res) => {
+router.get('/:shortUrl', async (req, res) => {
 
-  const items = await Url.find();
-  console.log(items);
-   items.map(k => {
-   if (k.shortUrl === req.params.id){
-     res.status(301).redirect(k.originalUrl);
-   }else {
-     res.status(404).send('not found')
-   }
- });
-
+  try{
+      const item = await Url.findOne({shortUrl: req.params.shortUrl});
+      if(!item) {
+         return res.status(404).send("not found")
+      }
+      res.status(301).redirect(item.originalUrl)
+  }catch (e) {
+      res.status(404).send('not found')
+  }
 });
 
 router.post('/',  async (req, res) => {
-  const productData = req.body;
-  productData.shortUrl = nanoid(7);
+  const Data = req.body;
+  Data.shortUrl = nanoid(7);
 
-  const url = new Url(productData);
+  const url = new Url(Data);
   try {
     await url.save();
 
-    return res.send(url);
+    return res.send({
+        shortUrl: url.shortUrl
+    });
   } catch (e) {
     return res.status(400).send(e);
   }
